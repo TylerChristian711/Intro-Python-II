@@ -65,5 +65,8 @@ while running:
         running = False
 
     else:
-        if user_input == 'n':
-            player.current_room = room['foyer']
+        next_room =player.current_room.get_room_in_direction(user_input)
+        if next_room is None:
+            print("There is no place to go in that direction")
+        else:
+            player.current_room = next_room

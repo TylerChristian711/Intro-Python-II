@@ -2,7 +2,7 @@
 # currently.
 
 from room import Room
-from item import Item
+from items import Item
 from typing import List
 
 class Player:

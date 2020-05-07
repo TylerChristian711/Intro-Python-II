@@ -10,7 +10,7 @@ room = {
 
     'foyer': Room("Foyer", """Dim light filters in from the south. Dusty
 passages run north and east.""",
-                  [(Item('Map', 'Map to another treasure in another location.'))]),
+                  [(Item('map', 'Map to another treasure in another location.'))]),
 
     'overlook': Room("Grand Overlook", """A steep cliff appears before you, falling
 into the darkness. Ahead to the north, a light flickers in
@@ -19,12 +19,12 @@ the distance, but there is no way across the chasm.""",
 
     'narrow': Room("Narrow Passage", """The narrow passage bends here from west
 to north. The smell of gold permeates the air.""",
-                   [(Item('Key', "Old rusty key, it has an inscription on it but it's worn and faded."))]),
+                   [(Item('key', "Old rusty key, it has an inscription on it but it's worn and faded."))]),
 
     'treasure': Room("Treasure Chamber", """You've found the long-lost treasure
 chamber! Sadly, it has already been completely emptied by
 earlier adventurers. The only exit is to the south.""",
-                     [(Item('Skeleton', "Only dusty bones remain in this room."))]),
+                     [(Item('skeleton', "Only dusty bones remain in this room."))]),
 }
 
 # Link rooms together
@@ -38,8 +38,6 @@ room['narrow'].w_to = room['foyer']
 room['narrow'].n_to = room['treasure']
 room['treasure'].s_to = room['narrow']
 
-
-
 #
 # Main
 # needed a comment for commit
@@ -47,6 +45,7 @@ room['treasure'].s_to = room['narrow']
 # Make a new player object that is currently in the 'outside' room.
 
 player = Player("Tyler", room['outside'])
+
 
 # Write a loop that:
 #
@@ -59,26 +58,52 @@ player = Player("Tyler", room['outside'])
 #
 # If the user enters "q", quit the game.
 
+def perform_move(user_input):
+    if user_input in ['q', 'quit', 'exit']:
+        print("\nThanks for playing!\n")
+        global running
+        running = False
+    elif user_input in ['?', 'help']:
+        print("\nValid commands: ['n': North, 's': South, 'e': East,\n"
+              "'w': West, 'q, quit, exit': Quit, '?, help': Help]\n")
+    else:
+        next_room = player.move_to(user_input)
+        if next_room is None:
+            print("\nNo room in this direction.\n")
+        elif next_room is room['treasure']:
+            item_list = [i.name for i in player.items]
+            if 'key' not in item_list:
+                print("You must find the key to open this door")
+            else:
+                player.current_room = next_room
+        else:
+            player.current_room = next_room
+
+
+def perform_action(user_input):
+    if user_input[0] in ['get', 'take,', 'pickup']:
+        for item in player.current_room.items:
+            if item.name == user_input[1]:
+                item.on_take(player)
+            else:
+                print(f"{user_input[1]} cannot be found in this room")
+    elif user_input[0] in ['drop', 'putdown', 'place']:
+        for item in player.items:
+            if item.name == user_input[1]:
+                item.on_drop(player)
+
 
 running = True
 
 while running:
-    print(f"{player.current_room.name}\n")
+    print(f"\n{player.current_room.name}\n")
     print(f"{player.current_room.description}\n")
     if len(player.current_room.items) > 0:
         for item in player.current_room.items:
-            print(f"In the room you find {item.name}, {item.description}")
+            print(f"You find: {item.name}, {item.description}")
 
-    user_input = input('Where do you want to go? Enter (n, s, e, or w; q to quit: ')
-    if user_input == 'q':
-        print("\nThanks for playing come again!\n")
-        running = False
-    elif user_input in ['?', 'help']:
-        print("\nValid commands: n: to go north, e: to go east,\n"
-              "w: to go west q: to quit game, ?,help: Help\n ")
+    user_input = input('\nWhere do you want to go? Enter (n, s, e, or w; q to quit): ').split(' ')
+    if len(user_input) > 1:
+        perform_action(user_input)
     else:
-        next_room = player.move_to(user_input)
-        if next_room is None:
-            print("\nThere is no place to go in that direction\n")
-        else:
-            player.current_room = next_room
+        perform_move(user_input[0])

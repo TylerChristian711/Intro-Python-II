@@ -65,7 +65,10 @@ def perform_move(user_input):
         running = False
     elif user_input in ['?', 'help']:
         print("\nValid commands: ['n': North, 's': South, 'e': East,\n"
-              "'w': West, 'q, quit, exit': Quit, '?, help': Help]\n")
+              "'w': West, i: View Inventory, 'q, quit, exit': Quit, '?, help': Help]\n")
+    elif user_input == 'i':
+        for index, item in enumerate(player.items):
+            print(f"{index +1}. {item.name}")
     else:
         next_room = player.move_to(user_input)
         if next_room is None:

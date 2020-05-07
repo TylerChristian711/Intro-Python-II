@@ -35,7 +35,7 @@ room['treasure'].s_to = room['narrow']
 
 #
 # Main
-#needed a comment for commit
+# needed a comment for commit
 
 # Make a new player object that is currently in the 'outside' room.
 
@@ -56,17 +56,19 @@ player = Player("Tyler", room['outside'])
 running = True
 
 while running:
-    print(player.current_room.name)
+    print(f"{player.current_room.name}\n")
     print(player.current_room.description)
 
     user_input = input('Where do you want to go? Enter (n, s, e, or w; q to quit: ')
     if user_input == 'q':
-        print("Thanks for playing come again!")
+        print("\nThanks for playing come again!\n")
         running = False
-
+    elif user_input in ['?', 'help']:
+        print("\nValid commands: n: to go north, e: to go east,\n"
+              "w: to go west q: to quit game, ?,help: Help\n ")
     else:
-        next_room =player.current_room.get_room_in_direction(user_input)
+        next_room = player.move_to(user_input)
         if next_room is None:
-            print("There is no place to go in that direction")
+            print("\nThere is no place to go in that direction\n")
         else:
             player.current_room = next_room
